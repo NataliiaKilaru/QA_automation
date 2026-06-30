@@ -1,0 +1,26 @@
+{
+  "name": "qa_automation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NataliiaKilaru/QA_automation.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/NataliiaKilaru/QA_automation/issues"
+  },
+  "homepage": "https://github.com/NataliiaKilaru/QA_automation#readme",
+  "dependencies": {
+    "prettier": "^3.9.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.1",
+    "@types/node": "^26.0.1"
+  }
+}
