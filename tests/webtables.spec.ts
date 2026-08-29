@@ -1,52 +1,53 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
+
 import { WebTablesPage } from '../pages/webTables.page';
 import {
   createEmployeeData,
+  employeeToDelete,
   existingEmployee,
   updatedEmployee,
 } from '../test-data/employees';
+import { WEB_TABLES } from '../test-descriptions/webTables.test-description';
+import {
+  verifyEmployeeDeleted,
+  verifyEmployeeEmailInput,
+  verifyEmployeeExists,
+  verifyEmployeeRow,
+} from '../helpers/webTables.helper';
 
-test('Verify that user can create a new record', async ({ page }) => {
-  const employee = createEmployeeData();
-  const webTablesPage = new WebTablesPage(page);
+test.describe(WEB_TABLES.describe, () => {
+  let webTablesPage: WebTablesPage;
 
-  await webTablesPage.open();
-  await webTablesPage.addButton.click();
-  await webTablesPage.fillEmployeeForm(employee);
-  await webTablesPage.submitForm();
+  test.beforeEach(async ({ page }) => {
+    webTablesPage = new WebTablesPage(page);
+    await webTablesPage.open(WEB_TABLES.tab);
+  });
 
-  const employeeRow =
-    webTablesPage.getEmployeeRowByEmail(employee.email);
+  test(WEB_TABLES.tests.create, async () => {
+    const employee = createEmployeeData();
 
-  await expect(employeeRow).toBeVisible();
-  await expect(employeeRow).toContainText(employee.firstName);
-  await expect(employeeRow).toContainText(employee.lastName);
-  await expect(employeeRow).toContainText(employee.age);
-  await expect(employeeRow).toContainText(employee.email);
-  await expect(employeeRow).toContainText(employee.salary);
-  await expect(employeeRow).toContainText(employee.department);
-});
+    await webTablesPage.openRegistrationForm();
+    await webTablesPage.fillEmployeeForm(employee);
+    await webTablesPage.submitForm();
 
-test('Verify that the user can edit an existing record', async ({ page }) => {
-  const webTablesPage = new WebTablesPage(page);
+    await verifyEmployeeRow(webTablesPage, employee);
+  });
 
-  await webTablesPage.open();
-  await webTablesPage.editEmployeeByEmail(existingEmployee.email);
+  test(WEB_TABLES.tests.edit, async () => {
+    await webTablesPage.editEmployeeByEmail(existingEmployee.email);
+    await verifyEmployeeEmailInput(webTablesPage, existingEmployee.email);
 
-  await expect(webTablesPage.emailInput)
-    .toHaveValue(existingEmployee.email);
+    await webTablesPage.fillEmployeeForm(updatedEmployee);
+    await webTablesPage.submitForm();
 
-  await webTablesPage.fillEmployeeForm(updatedEmployee);
-  await webTablesPage.submitForm();
+    await verifyEmployeeRow(webTablesPage, updatedEmployee);
+  });
 
-  const updatedEmployeeRow =
-    webTablesPage.getEmployeeRowByEmail(updatedEmployee.email);
+  test(WEB_TABLES.tests.delete, async () => {
+    await verifyEmployeeExists(webTablesPage, employeeToDelete.email);
 
-  await expect(updatedEmployeeRow).toBeVisible();
-  await expect(updatedEmployeeRow).toContainText(updatedEmployee.firstName);
-  await expect(updatedEmployeeRow).toContainText(updatedEmployee.lastName);
-  await expect(updatedEmployeeRow).toContainText(updatedEmployee.age);
-  await expect(updatedEmployeeRow).toContainText(updatedEmployee.email);
-  await expect(updatedEmployeeRow).toContainText(updatedEmployee.salary);
-  await expect(updatedEmployeeRow).toContainText(updatedEmployee.department);
+    await webTablesPage.deleteEmployeeByEmail(employeeToDelete.email);
+
+    await verifyEmployeeDeleted(webTablesPage, employeeToDelete.email);
+  });
 });

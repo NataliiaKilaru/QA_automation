@@ -1,4 +1,5 @@
-import { Page, Locator } from '@playwright/test';
+import { Locator, Page } from '@playwright/test';
+import { Employee } from '../types/employee';
 
 export class WebTablesPage {
   readonly page: Page;
@@ -27,24 +28,32 @@ export class WebTablesPage {
     this.submitButton = page.getByRole('button', { name: 'Submit' });
   }
 
-  async open() {
-    await this.page.goto('https://demoqa.com/webtables');
+  async open(tab: string) {
+    await this.page.goto('https://demoqa.com/');
+
+    await this.page
+      .locator('.card-body')
+      .filter({ hasText: 'Elements' })
+      .click();
+
+    await this.page.getByText(tab, { exact: true }).click();
   }
 
-  async fillEmployeeForm(employee: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    age: string;
-    salary: string;
-    department: string;
-  }) {
+  async openRegistrationForm() {
+    await this.addButton.click();
+  }
+
+  async fillEmployeeForm(employee: Employee) {
     await this.firstNameInput.fill(employee.firstName);
     await this.lastNameInput.fill(employee.lastName);
     await this.emailInput.fill(employee.email);
     await this.ageInput.fill(employee.age);
     await this.salaryInput.fill(employee.salary);
     await this.departmentInput.fill(employee.department);
+  }
+
+  async submitForm() {
+    await this.submitButton.click();
   }
 
   getEmployeeRowByEmail(email: string): Locator {
@@ -60,7 +69,10 @@ export class WebTablesPage {
     await editButton.click();
   }
 
-  async submitForm() {
-    await this.submitButton.click();
+  async deleteEmployeeByEmail(email: string) {
+    const employeeRow = this.getEmployeeRowByEmail(email);
+    const deleteButton = employeeRow.locator('[title="Delete"]');
+
+    await deleteButton.click();
   }
 }
