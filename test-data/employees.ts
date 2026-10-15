@@ -1,4 +1,6 @@
-export const createEmployeeData = () => ({
+import { Employee } from '../types/employee';
+
+export const createEmployeeData = (): Employee => ({
   firstName: 'Natalia',
   lastName: 'Kilaru',
   email: `natalia${Date.now()}@test.com`,
@@ -7,7 +9,7 @@ export const createEmployeeData = () => ({
   department: 'QA',
 });
 
-export const existingEmployee = {
+export const existingEmployee: Employee = {
   firstName: 'Cierra',
   lastName: 'Vega',
   email: 'cierra@example.com',
@@ -16,11 +18,15 @@ export const existingEmployee = {
   department: 'Insurance',
 };
 
-export const updatedEmployee = {
+export const updatedEmployee: Employee = {
   firstName: 'Cierraupdated',
   lastName: 'Vegaupdated',
   email: 'cierraupdated@example.com',
   age: '50',
   salary: '16870',
   department: 'Development',
+};
+
+export const employeeToDelete = {
+  email: 'alden@example.com',
 };
