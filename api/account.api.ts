@@ -14,6 +14,9 @@ export type TestUser = {
 export class AccountApi {
   constructor(private readonly request: APIRequestContext) {}
 
+  /**
+   * Creates a unique test account and returns its credentials and token.
+   */
   async createUser(): Promise<TestUser> {
     const username = `qa_${randomUUID().replace(/-/g, '')}`;
     const password = 'TestPassword@123';
@@ -41,6 +44,10 @@ export class AccountApi {
     }
   }
 
+  /**
+   * Checks whether the specified test account is authorized.
+   * @param user - The test account.
+   */
   async isUserAuthorized(user: TestUser): Promise<boolean> {
     const response = await this.request.post(`${API_BASE_URL}/Account/v1/Authorized`, {
       data: { userName: user.username, password: user.password },
@@ -52,6 +59,10 @@ export class AccountApi {
     return result as boolean;
   }
 
+  /**
+   * Deletes the test account unless it has already been removed.
+   * @param user - The test account.
+   */
   async deleteUser(user: TestUser): Promise<void> {
     if (user.deleted) return;
 
