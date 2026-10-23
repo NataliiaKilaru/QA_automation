@@ -4,6 +4,11 @@ import { API_BASE_URL, TestUser } from './account.api';
 export class BookStoreApi {
   constructor(private readonly request: APIRequestContext) {}
 
+  /**
+   * Adds a book to the specified account through the API and verifies the collection.
+   * @param user - The test account.
+   * @param isbn - The ISBN of the book.
+   */
   async addBook(user: TestUser, isbn: string): Promise<void> {
     const response = await this.request.post(`${API_BASE_URL}/BookStore/v1/Books`, {
       headers: { Authorization: `Bearer ${user.token}` },

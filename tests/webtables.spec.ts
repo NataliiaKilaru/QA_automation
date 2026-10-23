@@ -1,53 +1,84 @@
+
 import { test } from '@playwright/test';
 
-import { WebTablesPage } from '../pages/webTables.page';
+import { WebTablesPage } from '../pages/webTables/webTables.page';
 import {
   createEmployeeData,
   employeeToDelete,
   existingEmployee,
   updatedEmployee,
 } from '../test-data/employees';
-import { WEB_TABLES } from '../test-descriptions/webTables.test-description';
+
 import {
   verifyEmployeeDeleted,
   verifyEmployeeEmailInput,
   verifyEmployeeExists,
   verifyEmployeeRow,
-} from '../helpers/webTables.helper';
+} from '../pages/webTables/webTables.assertions';
 
-test.describe(WEB_TABLES.describe, () => {
+test.describe('Web Tables', () => {
   let webTablesPage: WebTablesPage;
 
   test.beforeEach(async ({ page }) => {
     webTablesPage = new WebTablesPage(page);
-    await webTablesPage.open(WEB_TABLES.tab);
+    await webTablesPage.open('Web Tables');
   });
 
-  test(WEB_TABLES.tests.create, async () => {
+  test('User can create an employee', async () => {
     const employee = createEmployeeData();
 
-    await webTablesPage.openRegistrationForm();
-    await webTablesPage.fillEmployeeForm(employee);
-    await webTablesPage.submitForm();
+    await test.step('Open registration form', async () => {
+      await webTablesPage.openRegistrationForm();
+    });
 
-    await verifyEmployeeRow(webTablesPage, employee);
+    await test.step('Fill and submit employee form', async () => {
+      await webTablesPage.fillEmployeeForm(employee);
+      await webTablesPage.submitForm();
+    });
+
+    await test.step('Verify employee was created', async () => {
+      await verifyEmployeeRow(webTablesPage, employee);
+    });
   });
 
-  test(WEB_TABLES.tests.edit, async () => {
-    await webTablesPage.editEmployeeByEmail(existingEmployee.email);
-    await verifyEmployeeEmailInput(webTablesPage, existingEmployee.email);
+  test('User can edit an employee', async () => {
+    await test.step('Open employee for editing', async () => {
+      await webTablesPage.editEmployeeByEmail(existingEmployee.email);
+      await verifyEmployeeEmailInput(
+        webTablesPage,
+        existingEmployee.email,
+      );
+    });
 
-    await webTablesPage.fillEmployeeForm(updatedEmployee);
-    await webTablesPage.submitForm();
+    await test.step('Update employee information', async () => {
+      await webTablesPage.fillEmployeeForm(updatedEmployee);
+      await webTablesPage.submitForm();
+    });
 
-    await verifyEmployeeRow(webTablesPage, updatedEmployee);
+    await test.step('Verify employee was updated', async () => {
+      await verifyEmployeeRow(webTablesPage, updatedEmployee);
+    });
   });
 
-  test(WEB_TABLES.tests.delete, async () => {
-    await verifyEmployeeExists(webTablesPage, employeeToDelete.email);
+  test('User can delete an employee', async () => {
+    await test.step('Verify employee exists', async () => {
+      await verifyEmployeeExists(
+        webTablesPage,
+        employeeToDelete.email,
+      );
+    });
 
-    await webTablesPage.deleteEmployeeByEmail(employeeToDelete.email);
+    await test.step('Delete employee', async () => {
+      await webTablesPage.deleteEmployeeByEmail(
+        employeeToDelete.email,
+      );
+    });
 
-    await verifyEmployeeDeleted(webTablesPage, employeeToDelete.email);
+    await test.step('Verify employee was deleted', async () => {
+      await verifyEmployeeDeleted(
+        webTablesPage,
+        employeeToDelete.email,
+      );
+    });
   });
 });

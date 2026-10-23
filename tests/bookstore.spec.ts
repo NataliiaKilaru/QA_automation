@@ -1,9 +1,11 @@
 import { expect } from '@playwright/test';
-import { test } from '../fixtures/testUser.fixture';
+import { test } from '@playwright/test';
+import { AccountApi, TestUser } from '../api/account.api';
+import { BookStoreApi } from '../api/bookStore.api';
 
-import { BookStorePage } from '../pages/bookStore.page';
-import { LoginPage } from '../pages/login.page';
-import { ProfilePage } from '../pages/profile.page';
+import { BookStorePage } from '../pages/bookStore/bookStore.page';
+import { LoginPage } from '../pages/login/login.page';
+import { ProfilePage } from '../pages/profile/profile.page';
 import { bookData } from '../test-data/books';
 
 import {
@@ -11,27 +13,18 @@ import {
   verifyBookDisplayed,
   verifyBookDetails,
   verifyNoBooksFound,
-} from '../helpers/bookStore.helper';
+} from '../pages/bookStore/bookStore.assertions';
 
-const BOOK_STORE = {
-  describe: 'Book Store',
-  tab: 'Book Store',
+test.describe('Book Store', () => {
+// const bookStorePage = new BookStorePage(page);
+//     const nonexistentTitle = 'Nonexistent Book 987654321';
 
-  tests: {
-    searchAndOpen: 'User can search for a book and open it',
-    nonexistentBook: 'User can search for a nonexistent book and reset search',
-    addBook: 'Authenticated user can add a book to their collection',
-    removeBook: 'Authenticated user can remove a book from their collection',
-    logoutAndRelogin: 'User can log out and log in again via Profile page',
-  },
-} as const;
-
-test.describe(BOOK_STORE.describe, () => {
-  test(BOOK_STORE.tests.searchAndOpen, async ({ page }) => {
+  test('User can search for a book and open it', async ({ page }) => {
+    //declare all variables in describe block to avoid redeclaring them in each test
     const bookStorePage = new BookStorePage(page);
 
     await test.step('Open Book Store', async () => {
-      await bookStorePage.open(BOOK_STORE.tab);
+      await bookStorePage.open('Book Store');
     });
 
     await test.step('Verify books are displayed', async () => {
@@ -61,12 +54,12 @@ test.describe(BOOK_STORE.describe, () => {
     });
   });
 
-  test(BOOK_STORE.tests.nonexistentBook, async ({ page }) => {
+  test('User can search for a nonexistent book and reset search', async ({ page }) => {
     const bookStorePage = new BookStorePage(page);
     const nonexistentTitle = 'Nonexistent Book 987654321';
 
     await test.step('Open Book Store', async () => {
-      await bookStorePage.open(BOOK_STORE.tab);
+      await bookStorePage.open('Book Store');
     });
 
     await test.step('Verify books are initially displayed', async () => {
@@ -87,8 +80,24 @@ test.describe(BOOK_STORE.describe, () => {
     });
   });
 
+//create new test suite in another file
+  test.describe('Authenticated user scenarios', () => {
+    let testUser: TestUser;
+    let bookStoreApi: BookStoreApi;
 
-  test(BOOK_STORE.tests.addBook, async ({ page, testUser }) => {
+    test.beforeEach(async ({ request }) => {
+      const accountApi = new AccountApi(request);
+      testUser = await accountApi.createUser();
+      bookStoreApi = new BookStoreApi(request);
+    });
+
+    test.afterEach(async ({ request }) => {
+      if (testUser) {
+        await new AccountApi(request).deleteUser(testUser);
+      }
+    });
+
+  test('Authenticated user can add a book to their collection', async ({ page }) => {
     const loginPage = new LoginPage(page);
     const profilePage = new ProfilePage(page);
     const bookStorePage = new BookStorePage(page);
@@ -118,7 +127,7 @@ test.describe(BOOK_STORE.describe, () => {
     });
   });
 
-  test(BOOK_STORE.tests.removeBook, async ({ page, testUser, bookStoreApi }) => {
+  test('Authenticated user can remove a book from their collection', async ({ page }) => {
     const titleToRemove = 'Git Pocket Guide';
     const isbnToRemove = '9781449325862';
     const loginPage = new LoginPage(page);
@@ -147,7 +156,7 @@ test.describe(BOOK_STORE.describe, () => {
       await expect(profilePage.getBookLink(titleToRemove)).toHaveCount(0);
     });
   });
-  test(BOOK_STORE.tests.logoutAndRelogin, async ({ page, testUser }) => {
+  test('User can log out and log in again via Profile page', async ({ page }) => {
     const loginPage = new LoginPage(page);
     const profilePage = new ProfilePage(page);
 
@@ -158,18 +167,18 @@ test.describe(BOOK_STORE.describe, () => {
     });
 
     await test.step('Log out', async () => {
-      await page.getByRole('button', { name: 'Logout', exact: true }).click();
+      await profilePage.logout();
       await expect(page).toHaveURL('https://demoqa.com/login', { timeout: 15000 });
     });
 
     await test.step('Open Profile while logged out', async () => {
       await profilePage.open();
-      await expect(page.getByRole('link', { name: 'login', exact: true })).toBeVisible();
-      await expect(page.getByRole('link', { name: 'register', exact: true })).toBeVisible();
+      await expect(profilePage.loginLink).toBeVisible();
+      await expect(profilePage.registerLink).toBeVisible();
     });
 
     await test.step('Follow Login link from Profile', async () => {
-      await page.getByRole('link', { name: 'login', exact: true }).click();
+      await profilePage.followLoginLink();
       await expect(page).toHaveURL('https://demoqa.com/login', { timeout: 15000 });
     });
 
@@ -177,5 +186,6 @@ test.describe(BOOK_STORE.describe, () => {
       await loginPage.login(testUser.username, testUser.password);
       await expect(profilePage.username).toHaveText(testUser.username);
     });
+  });
   });
 });

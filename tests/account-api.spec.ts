@@ -11,7 +11,8 @@ test('API: create, verify and delete test user', async ({ request }) => {
   let userId: string | undefined;
   let token: string | undefined;
   let deleted = false;
-
+//structure of the test is unclear
+// remove try block
   try {
     // 1. Create user
     const createResponse = await request.post(

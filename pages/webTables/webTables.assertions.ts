@@ -1,8 +1,9 @@
 import { expect } from '@playwright/test';
 
-import { WebTablesPage } from '../pages/webTables.page';
-import { Employee } from '../types/employee';
+import { WebTablesPage } from './webTables.page';
+import { Employee } from '../../types/employee';
 
+/** Verifies the verify employee row expectation. */
 export async function verifyEmployeeRow(
   webTablesPage: WebTablesPage,
   employee: Employee,
@@ -18,6 +19,7 @@ export async function verifyEmployeeRow(
   await expect(employeeRow).toContainText(employee.department);
 }
 
+/** Verifies the verify employee email input expectation. */
 export async function verifyEmployeeEmailInput(
   webTablesPage: WebTablesPage,
   email: string,
@@ -25,6 +27,7 @@ export async function verifyEmployeeEmailInput(
   await expect(webTablesPage.emailInput).toHaveValue(email);
 }
 
+/** Verifies the verify employee exists expectation. */
 export async function verifyEmployeeExists(
   webTablesPage: WebTablesPage,
   email: string,
@@ -34,6 +37,7 @@ export async function verifyEmployeeExists(
   await expect(employeeRow).toBeVisible();
 }
 
+/** Verifies the verify employee deleted expectation. */
 export async function verifyEmployeeDeleted(
   webTablesPage: WebTablesPage,
   email: string,
