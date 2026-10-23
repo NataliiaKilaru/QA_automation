@@ -25,3 +25,4 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 30
+//add configyration for run test with smoke tag and with regression tag

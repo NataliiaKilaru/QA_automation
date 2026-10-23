@@ -16,7 +16,11 @@ import {
 } from '../pages/bookStore/bookStore.assertions';
 
 test.describe('Book Store', () => {
+// const bookStorePage = new BookStorePage(page);
+//     const nonexistentTitle = 'Nonexistent Book 987654321';
+
   test('User can search for a book and open it', async ({ page }) => {
+    //declare all variables in describe block to avoid redeclaring them in each test
     const bookStorePage = new BookStorePage(page);
 
     await test.step('Open Book Store', async () => {
@@ -76,7 +80,7 @@ test.describe('Book Store', () => {
     });
   });
 
-
+//create new test suite in another file
   test.describe('Authenticated user scenarios', () => {
     let testUser: TestUser;
     let bookStoreApi: BookStoreApi;
