@@ -1,8 +1,13 @@
 import { Locator, Page } from '@playwright/test';
 import { BasePage } from '../base.page';
 
-/** Locators for the WebTables page. */
 export class WebTablesLocators extends BasePage {
+  /**
+   * Initializes the page object or API client with its required context.
+   *
+   * @param page - Playwright page used to interact with the browser.
+   * @returns No return value.
+   */
   constructor(page: Page) { super(page); }
   readonly firstNameInput = this.page.locator('#firstName');
   readonly lastNameInput = this.page.locator('#lastName');
@@ -13,17 +18,32 @@ export class WebTablesLocators extends BasePage {
   readonly addButton = this.page.getByRole('button', { name: 'Add' });
   readonly submitButton = this.page.getByRole('button', { name: 'Submit' });
 
-  /** @param email - The email identifying an employee row. */
+  /**
+   * Returns the table row for the employee identified by email.
+   *
+   * @param email - Email address identifying the employee.
+   * @returns The matching Playwright locator.
+   */
   getEmployeeRowByEmail(email: string): Locator {
     return this.page.locator('tbody tr').filter({ hasText: email });
   }
 
-  /** @param email - The email identifying the row to edit. */
+  /**
+   * Returns the edit button for the employee identified by email.
+   *
+   * @param email - Email address identifying the employee.
+   * @returns The matching Playwright locator.
+   */
   getEditButton(email: string): Locator {
     return this.getEmployeeRowByEmail(email).locator('[title="Edit"]');
   }
 
-  /** @param email - The email identifying the row to delete. */
+  /**
+   * Returns the delete button for the employee identified by email.
+   *
+   * @param email - Email address identifying the employee.
+   * @returns The matching Playwright locator.
+   */
   getDeleteButton(email: string): Locator {
     return this.getEmployeeRowByEmail(email).locator('[title="Delete"]');
   }

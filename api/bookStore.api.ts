@@ -2,12 +2,20 @@ import { APIRequestContext, expect } from '@playwright/test';
 import { API_BASE_URL, TestUser } from './account.api';
 
 export class BookStoreApi {
+  /**
+   * Initializes the page object or API client with its required context.
+   *
+   * @param request - Playwright API request context.
+   * @returns No return value.
+   */
   constructor(private readonly request: APIRequestContext) {}
 
   /**
-   * Adds a book to the specified account through the API and verifies the collection.
-   * @param user - The test account.
-   * @param isbn - The ISBN of the book.
+   * Adds a book to the user collection through the API and verifies the result.
+   *
+   * @param user - Test account used for the operation.
+   * @param isbn - ISBN of the book.
+   * @returns A promise that resolves when the operation completes.
    */
   async addBook(user: TestUser, isbn: string): Promise<void> {
     const response = await this.request.post(`${API_BASE_URL}/BookStore/v1/Books`, {

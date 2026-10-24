@@ -12,10 +12,17 @@ export type TestUser = {
 };
 
 export class AccountApi {
+  /**
+   * Initializes the page object or API client with its required context.
+   *
+   * @param request - Playwright API request context.
+   * @returns No return value.
+   */
   constructor(private readonly request: APIRequestContext) {}
 
   /**
-   * Creates a unique test account and returns its credentials and token.
+   * Creates a unique test user and obtains an authorization token.
+   * @returns A promise that resolves to the created test user.
    */
   async createUser(): Promise<TestUser> {
     const username = `qa_${randomUUID().replace(/-/g, '')}`;
@@ -29,24 +36,20 @@ export class AccountApi {
     expect(userId).toBeTruthy();
     expect(body.username).toBe(username);
 
-    // If token acquisition fails, the fixture cannot delete this account.
-    // Report its ID for manual recovery instead of silently leaking it.
-    try {
-      const response = await this.request.post(`${API_BASE_URL}/Account/v1/GenerateToken`, {
-        data: { userName: username, password },
-      });
-      expect(response.status(), `Generate token: ${await response.text()}`).toBe(200);
-      const token: string = (await response.json()).token;
-      expect(token).toBeTruthy();
-      return { userId, username, password, token };
-    } catch (error) {
-      throw new Error(`Created user ${username} (${userId}) but could not obtain cleanup token: ${String(error)}`);
-    }
+    const response = await this.request.post(`${API_BASE_URL}/Account/v1/GenerateToken`, {
+      data: { userName: username, password },
+    });
+    expect(response.status(), `Generate token: ${await response.text()}`).toBe(200);
+    const token: string = (await response.json()).token;
+    expect(token).toBeTruthy();
+    return { userId, username, password, token };
   }
 
   /**
-   * Checks whether the specified test account is authorized.
-   * @param user - The test account.
+   * Checks whether the specified user is authorized.
+   *
+   * @param user - Test account used for the operation.
+   * @returns A promise that resolves to the authorization status.
    */
   async isUserAuthorized(user: TestUser): Promise<boolean> {
     const response = await this.request.post(`${API_BASE_URL}/Account/v1/Authorized`, {
@@ -60,13 +63,14 @@ export class AccountApi {
   }
 
   /**
-   * Deletes the test account unless it has already been removed.
-   * @param user - The test account.
+   * Deletes the specified test account if it still exists.
+   *
+   * @param user - Test account used for the operation.
+   * @returns A promise that resolves when the operation completes.
    */
   async deleteUser(user: TestUser): Promise<void> {
     if (user.deleted) return;
 
-    // A previous UI deletion may already have removed the account.
     if (!(await this.isUserAuthorized(user))) return;
 
     const tokenResponse = await this.request.post(`${API_BASE_URL}/Account/v1/GenerateToken`, {

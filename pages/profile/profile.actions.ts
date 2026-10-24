@@ -1,19 +1,29 @@
 import { expectProfileBookVisible, expectProfileBookRemoved, expectConfirmationDialogVisible, expectConfirmationEnabled } from './profile.assertions';
 import { ProfileLocators } from './profile.locators';
 
-/** Actions supported by the Profile page. */
 export class ProfileActions extends ProfileLocators {
-  /** Opens the Profile page. */
+  /**
+   * Opens the profile page.
+   * @returns A promise that resolves when the operation completes.
+   */
   async open(): Promise<void> {
     await this.navigate('https://demoqa.com/profile');
   }
 
-  /** Opens the Book Store page. */
+  /**
+   * Opens the Book Store page.
+   * @returns A promise that resolves when the operation completes.
+   */
   async openBookStore(): Promise<void> {
     await this.navigate('https://demoqa.com/books');
   }
 
-  /** @param title - The title of the book to remove from the profile. */
+  /**
+   * Removes the specified book from the profile collection.
+   *
+   * @param title - Title of the book.
+   * @returns A promise that resolves when the operation completes.
+   */
   async removeBook(title: string): Promise<void> {
     await expectProfileBookVisible(this, title);
     await this.getRemoveBookButton(title).click();
@@ -22,7 +32,10 @@ export class ProfileActions extends ProfileLocators {
     await expectProfileBookRemoved(this, title);
   }
 
-  /** Deletes the account using the Profile confirmation dialog. */
+  /**
+   * Deletes the current account using the confirmation dialog.
+   * @returns A promise that resolves when the operation completes.
+   */
   async deleteAccount(): Promise<void> {
     await this.deleteAccountButton.click();
     const confirmButton = this.confirmationDialog.getByRole('button', { name: 'OK', exact: true });
@@ -32,12 +45,18 @@ export class ProfileActions extends ProfileLocators {
     await confirmButton.click();
   }
 
-  /** Logs out of the current account. */
+  /**
+   * Signs out of the current account.
+   * @returns A promise that resolves when the operation completes.
+   */
   async logout(): Promise<void> {
     await this.logoutButton.click();
   }
 
-  /** Follows the login link displayed for unauthenticated visitors. */
+  /**
+   * Opens the login page using the profile login link.
+   * @returns A promise that resolves when the operation completes.
+   */
   async followLoginLink(): Promise<void> {
     await this.loginLink.click();
   }

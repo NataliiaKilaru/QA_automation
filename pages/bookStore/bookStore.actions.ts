@@ -1,21 +1,27 @@
 import { BookStoreLocators } from './bookStore.locators';
-//remove annotation for the class
-/** Actions supported by the BookStore page. */
 export class BookStoreActions extends BookStoreLocators {
-  //add description to the method
-  /** @param tab - The Book Store navigation tab name. */
+  /**
+   * Opens the specified Book Store navigation tab.
+   *
+   * @param tab - Name of the navigation tab to open.
+   * @returns A promise that resolves when the operation completes.
+   */
   async open(tab: string): Promise<void> {
     await this.openSection('Book Store Application', tab);
   }
-//add description to the method
-  /** @param bookName - The title used to filter books. */
+  /**
+   * Searches the Book Store for a book by title.
+   *
+   * @param bookName - Title of the book.
+   * @returns A promise that resolves when the operation completes.
+   */
   async searchBook(bookName: string): Promise<void> {
     await this.searchInput.fill(bookName);
   }
 
   /**
-   * Adds the current book to the user collection and accepts its native alert.
-   * @returns The browser alert message.
+   * Adds the selected book to the user collection and captures the confirmation.
+   * @returns A promise that resolves to the confirmation message.
    */
   async addBookToCollection(): Promise<string> {
     const dialogPromise = new Promise<string>((resolve) => {
@@ -29,8 +35,12 @@ export class BookStoreActions extends BookStoreLocators {
     return await dialogPromise;
   }
 
-  //add description to the method
-  /** @param bookName - The exact title of the book to open. */
+  /**
+   * Opens the details page for the specified book.
+   *
+   * @param bookName - Title of the book.
+   * @returns A promise that resolves when the operation completes.
+   */
   async openBook(bookName: string): Promise<void> {
     await this.getBookLink(bookName).click();
   }

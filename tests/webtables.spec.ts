@@ -1,7 +1,8 @@
 
 import { test } from '@playwright/test';
+import type { Employee } from '../types/employee';
 
-import { WebTablesPage } from '../pages/webTables/webTables.page';
+import { WebTablesActions } from '../pages/webTables/webTables.actions';
 import {
   createEmployeeData,
   employeeToDelete,
@@ -16,17 +17,17 @@ import {
   verifyEmployeeRow,
 } from '../pages/webTables/webTables.assertions';
 
-test.describe('Web Tables', () => {
-  let webTablesPage: WebTablesPage;
+test.describe('Web Tables', { tag: '@regression' }, () => {
+  let webTablesPage: WebTablesActions;
+  let employee: Employee;
 
   test.beforeEach(async ({ page }) => {
-    webTablesPage = new WebTablesPage(page);
+    webTablesPage = new WebTablesActions(page);
+    employee = createEmployeeData();
     await webTablesPage.open('Web Tables');
   });
 
   test('User can create an employee', async () => {
-    const employee = createEmployeeData();
-
     await test.step('Open registration form', async () => {
       await webTablesPage.openRegistrationForm();
     });
