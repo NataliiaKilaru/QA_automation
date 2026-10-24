@@ -1,21 +1,30 @@
 import { Page } from '@playwright/test';
 
-/** Provides shared navigation methods for all page objects. */
 export class BasePage {
+  /**
+   * Initializes the page object or API client with its required context.
+   *
+   * @param page - Playwright page used to interact with the browser.
+   * @returns No return value.
+   */
   constructor(public readonly page: Page) {}
 
   /**
    * Navigates to the specified URL.
-   * @param url - The absolute URL of the destination page.
+   *
+   * @param url - Destination URL.
+   * @returns A promise that resolves when the operation completes.
    */
   async navigate(url: string): Promise<void> {
     await this.page.goto(url);
   }
 
   /**
-   * Opens a section of DemoQA using its category card and navigation tab.
-   * @param category - The category displayed on the homepage card.
-   * @param tab - The exact navigation tab text.
+   * Opens a navigation tab within the specified category.
+   *
+   * @param category - Name of the navigation category.
+   * @param tab - Name of the navigation tab to open.
+   * @returns A promise that resolves when the operation completes.
    */
   async openSection(category: string, tab: string): Promise<void> {
     await this.navigate('https://demoqa.com/');

@@ -1,9 +1,13 @@
 import { Locator, Page } from '@playwright/test';
 import { BasePage } from '../base.page';
 
-//remove annotation for the class
-/** Locators for the BookStore page. */
 export class BookStoreLocators extends BasePage {
+  /**
+   * Initializes the page object or API client with its required context.
+   *
+   * @param page - Playwright page used to interact with the browser.
+   * @returns No return value.
+   */
   constructor(page: Page) { super(page); }
   readonly searchInput = this.page.locator('#searchBox');
   readonly bookDetailLinks = this.page.locator('a[href*="book="]');
@@ -13,8 +17,12 @@ export class BookStoreLocators extends BasePage {
   readonly publisherValue = this.page.locator('#publisher-wrapper #userName-value');
   readonly addToCollectionButton = this.page.getByRole('button', { name: 'Add To Your Collection' });
 
-  //add description to the method
-  /** @param bookName - The exact title of the book. */
+  /**
+   * Returns the link for the specified book.
+   *
+   * @param bookName - Title of the book.
+   * @returns The matching Playwright locator.
+   */
   getBookLink(bookName: string): Locator {
     return this.page.getByRole('link', { name: bookName, exact: true });
   }
