@@ -32,8 +32,11 @@ jobs:
       - name: Install Chromium browser
         run: npx playwright install --with-deps chromium
 
-      - name: Run Playwright tests
-        run: npx playwright test --project=chromium
+      - name: Run Smoke tests
+        run: npx playwright test --project=chromium --grep "@smoke"
+
+      - name: Run Regression tests
+        run: npx playwright test --project=chromium --grep "@regression"
 
       - name: Upload HTML report
         if: always()

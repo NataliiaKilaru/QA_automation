@@ -1,11 +1,17 @@
 import { expect } from '@playwright/test';
 
-import { WebTablesPage } from './webTables.page';
+import { WebTablesActions } from './webTables.actions';
 import { Employee } from '../../types/employee';
 
-/** Verifies the verify employee row expectation. */
+/**
+ * Verifies that the employee row displays the expected details.
+ *
+ * @param webTablesPage - Web Tables page object.
+ * @param employee - Employee data to enter or verify.
+ * @returns A promise that resolves when the operation completes.
+ */
 export async function verifyEmployeeRow(
-  webTablesPage: WebTablesPage,
+  webTablesPage: WebTablesActions,
   employee: Employee,
 ) {
   const employeeRow = webTablesPage.getEmployeeRowByEmail(employee.email);
@@ -19,17 +25,29 @@ export async function verifyEmployeeRow(
   await expect(employeeRow).toContainText(employee.department);
 }
 
-/** Verifies the verify employee email input expectation. */
+/**
+ * Verifies that the email input contains the expected address.
+ *
+ * @param webTablesPage - Web Tables page object.
+ * @param email - Email address identifying the employee.
+ * @returns A promise that resolves when the operation completes.
+ */
 export async function verifyEmployeeEmailInput(
-  webTablesPage: WebTablesPage,
+  webTablesPage: WebTablesActions,
   email: string,
 ) {
   await expect(webTablesPage.emailInput).toHaveValue(email);
 }
 
-/** Verifies the verify employee exists expectation. */
+/**
+ * Verifies that the specified employee is present in the table.
+ *
+ * @param webTablesPage - Web Tables page object.
+ * @param email - Email address identifying the employee.
+ * @returns A promise that resolves when the operation completes.
+ */
 export async function verifyEmployeeExists(
-  webTablesPage: WebTablesPage,
+  webTablesPage: WebTablesActions,
   email: string,
 ) {
   const employeeRow = webTablesPage.getEmployeeRowByEmail(email);
@@ -37,9 +55,15 @@ export async function verifyEmployeeExists(
   await expect(employeeRow).toBeVisible();
 }
 
-/** Verifies the verify employee deleted expectation. */
+/**
+ * Verifies that the specified employee is absent from the table.
+ *
+ * @param webTablesPage - Web Tables page object.
+ * @param email - Email address identifying the employee.
+ * @returns A promise that resolves when the operation completes.
+ */
 export async function verifyEmployeeDeleted(
-  webTablesPage: WebTablesPage,
+  webTablesPage: WebTablesActions,
   email: string,
 ) {
   const employeeRow = webTablesPage.getEmployeeRowByEmail(email);
